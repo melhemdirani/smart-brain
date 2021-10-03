@@ -1,98 +1,106 @@
-import React from 'react';
+import React, {useState} from 'react';
 
-class Register extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      email: '',
-      password: '',
-      name: ''
-    }
+const Register = ({loadUser, onRouteChange}) => {
+
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [name, SetName] = useState("")
+
+  const onEmailChange = (event) => {
+    setEmail(event.target.value)
   }
 
-  onNameChange = (event) => {
-    this.setState({name: event.target.value})
+  const onPasswordChange = (event) => {
+    setPassword(event.target.value)
   }
 
-  onEmailChange = (event) => {
-    this.setState({email: event.target.value})
+  const onNameChange = (event) => {
+    SetName(event.target.value)
   }
 
-  onPasswordChange = (event) => {
-    this.setState({password: event.target.value})
-  }
+  const onSubmitSignIn = () => {
+    if ( email && password && name){
 
-  onSubmitSignIn = () => {
-    fetch('http://localhost:3000/register', {
+    fetch('https://secret-lake-91204.herokuapp.com/register', {
       method: 'post',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
-        email: this.state.email,
-        password: this.state.password,
-        name: this.state.name
+        email: email,
+        password: password,
+        name: name
       })
     })
       .then(response => response.json())
       .then(user => {
-        if (user) {
-          this.props.loadUser(user)
-          this.props.onRouteChange('home');
+        console.log(user)
+        if(user === email) {
+          alert("This email is already used, please register with a new email!");
+            setEmail("");
+            setPassword("");
+            SetName("");
+        } else 
+        if (user.id) {
+          loadUser(user)
+          onRouteChange('home');
         }
       })
-  }
+    } else {
+      alert("Please fill out all inputs!")
+    }
 
-  render() {
-    const { onRouteChange } = this.props;
-    return (
-      <article className="br3 ba b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center">
-        <main className="pa4 black-80">
-          <div className="measure">
-            <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
-              <legend className="f1 fw6 ph0 mh0">Register</legend>
-              <div className="mt3">
-                <label className="db fw6 lh-copy f6" htmlFor="name">Name</label>
-                <input
-                  className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
-                  type="text"
-                  name="name"
-                  id="name"
-                  onChange={this.onNameChange}
-                />
-              </div>
-              <div className="mt3">
-                <label className="db fw6 lh-copy f6" htmlFor="email-address">Email</label>
-                <input
-                  className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
-                  type="email"
-                  name="email-address"
-                  id="email-address"
-                  onChange={this.onEmailChange}
-                />
-              </div>
-              <div className="mv3">
-                <label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
-                <input
-                  className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
-                  type="password"
-                  name="password"
-                  id="password"
-                  onChange={this.onPasswordChange}
-                />
-              </div>
-            </fieldset>
-            <div className="">
+  }
+  return (
+    <article className="br3 ba b--black-10 mv4 w-100 w-50-m w-25-l mw6 shadow-5 center">
+      <main className="pa4 black-80">
+        <div className="measure">
+          <fieldset id="sign_up" className="ba b--transparent ph0 mh0">
+            <legend className="f1 fw6 ph0 mh0">Register</legend>
+            <div className="mt3">
+              <label className="db fw6 lh-copy f6" htmlFor="name">Name</label>
               <input
-                 onClick={() => onRouteChange('home')}
-                className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
-                type="submit"
-                value="Register"
+                className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
+                type="text"
+                name="name"
+                id="name"
+                value={name}
+                onChange={onNameChange}
               />
             </div>
+            <div className="mt3">
+              <label className="db fw6 lh-copy f6" htmlFor="email-address">Email</label>
+              <input
+                className="pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
+                type="email"
+                name="email-address"
+                id="email-address"
+                onChange={onEmailChange}
+                value={email}
+              />
+            </div>
+            <div className="mv3">
+              <label className="db fw6 lh-copy f6" htmlFor="password">Password</label>
+              <input
+                className="b pa2 input-reset ba bg-transparent hover-bg-black hover-white w-100"
+                type="password"
+                name="password"
+                id="password"
+                value={password}
+                onChange={onPasswordChange}
+              />
+            </div>
+          </fieldset>
+          <div className="">
+            <input
+                onClick={onSubmitSignIn}
+              className="b ph3 pv2 input-reset ba b--black bg-transparent grow pointer f6 dib"
+              type="submit"
+              value="Register"
+            />
           </div>
-        </main>
-      </article>
-    );
-  }
+        </div>
+      </main>
+    </article>
+  );
 }
 
 export default Register;
